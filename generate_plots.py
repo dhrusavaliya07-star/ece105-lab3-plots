@@ -101,3 +101,91 @@ def plot_scatter(ax: Axes, timestamps: np.ndarray, sensor_a: np.ndarray, sensor_
     # Function intentionally returns None (modifies ax in place)
     return None
 
+
+def main(seed: int | None = 1234) -> None:
+    """Generate data, create plots, and save PNG files.
+
+    Parameters
+    ----------
+    seed : int or None, optional
+        Seed for reproducible data generation. If ``None``, randomness is
+        uncontrolled. Default is 1234.
+
+    Returns
+    -------
+    None
+        Creates and saves three PNG files in the current working directory:
+        'scatter.png', 'histogram.png', and 'boxplot.png'.
+    """
+    # Generate data
+    sensor_a, sensor_b, timestamps = generate_data(seed)
+
+    # Scatter plot
+    fig, ax = plt.subplots(figsize=(10, 5))
+    plot_scatter(ax, timestamps, sensor_a, sensor_b)
+    fig.tight_layout()
+    fig.savefig('scatter.png', dpi=200)
+    plt.close(fig)
+
+    # Histogram
+    fig, ax = plt.subplots(figsize=(8, 5))
+    bins = np.linspace(min(sensor_a.min(), sensor_b.min()) - 1,
+                       max(sensor_a.max(), sensor_b.max()) + 1, 30)
+    ax.hist(sensor_a, bins=bins, alpha=0.6, label='Sensor A', color='tab:blue', edgecolor='k')
+    ax.hist(sensor_b, bins=bins, alpha=0.6, label='Sensor B', color='tab:orange', edgecolor='k')
+    ax.axvline(sensor_a.mean(), color='tab:blue', linestyle='--', linewidth=2, label='Sensor A mean')
+    ax.axvline(sensor_b.mean(), color='tab:orange', linestyle='--', linewidth=2, label='Sensor B mean')
+    ax.set_xlabel('Temperature (°C)')
+    ax.set_ylabel('Count')
+    ax.set_title('Histogram: Sensor Temperature Readings')
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig('histogram.png', dpi=200)
+    plt.close(fig)
+
+    # Box plot
+    fig, ax = plt.subplots(figsize=(6, 6))
+    data = [sensor_a, sensor_b]
+    bp = ax.boxplot(data, labels=['Sensor A', 'Sensor B'], patch_artist=True, showmeans=True)
+    colors = ['tab:blue', 'tab:orange']
+    for patch, color in zip(bp['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.6)
+    for median in bp['medians']:
+        median.set(color='black', linewidth=2)
+    if 'means' in bp:
+        for mean in bp['means']:
+            mean.set(marker='D', markerfacecolor='white', markeredgecolor='black')
+    overall_mean = np.concatenate(data).mean()
+    ax.axhline(overall_mean, color='gray', linestyle='--', linewidth=1.5,
+               label=f'Overall mean ({overall_mean:.2f} °C)')
+    ax.set_ylabel('Temperature (°C)')
+    ax.set_title('Box Plot: Sensor Temperature Distributions')
+    ax.legend()
+    ax.grid(axis='y', alpha=0.3)
+    fig.tight_layout()
+    fig.savefig('boxplot.png', dpi=200)
+    plt.close(fig)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Generate sensor plots and save as PNG files.')
+    parser.add_argument('--seed', type=str, default='1234',
+                        help='Integer seed for RNG (default: 1234). Use None for non-deterministic outputs by passing the string "None".')
+    args = parser.parse_args()
+
+    seed_arg = args.seed
+    # Allow the user to pass the literal string 'None' to disable seeding
+    if isinstance(seed_arg, str) and seed_arg.lower() == 'none':
+        seed = None
+    else:
+        try:
+            seed = int(seed_arg)
+        except ValueError:
+            seed = 1234
+
+    main(seed)
+
