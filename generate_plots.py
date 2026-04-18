@@ -10,8 +10,12 @@ Usage
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 
-
+# Create a function generate_data(seed) that returns sensor_a, sensor_b,
+# and timestamps arrays with the same parameters as in the notebook.
+# Use NumPy-style docstring with Parameters and Returns sections.
 def generate_data(seed: int | None = None):
     """Generate synthetic temperature readings for two sensors.
 
@@ -35,12 +39,6 @@ def generate_data(seed: int | None = None):
     timestamps : numpy.ndarray, shape (200,)
         Timestamp values (seconds) uniformly distributed between 0 and 10,
         sorted in ascending order so the three arrays line up chronologically.
-
-    Notes
-    -----
-    The function uses :func:`numpy.random.default_rng` to create a reproducible
-    random number generator when a seed is provided. Arrays are returned as
-    ``float64`` NumPy ndarrays.
     """
     rng = np.random.default_rng(seed)
 
@@ -59,3 +57,47 @@ def generate_data(seed: int | None = None):
     sensor_b = sensor_b[sort_idx]
 
     return sensor_a, sensor_b, timestamps
+
+# Create plot_scatter(sensor_a, sensor_b, timestamps, ax) that draws
+# the scatter plot from the notebook onto the given Axes object.
+# NumPy-style docstring. Modifies ax in place, returns None.
+def plot_scatter(ax: Axes, timestamps: np.ndarray, sensor_a: np.ndarray, sensor_b: np.ndarray) -> None:
+    """Draw the scatter plot of two sensors on an existing Axes.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        The Axes object to draw the scatter plot on. Modified in place.
+
+    timestamps : numpy.ndarray, shape (N,)
+        Time values in seconds (x-axis).
+
+    sensor_a : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor A (y values for the first series).
+
+    sensor_b : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor B (y values for the second series).
+
+    Returns
+    -------
+    None
+        The function modifies ``ax`` in place and returns nothing.
+    """
+    # Plot raw samples with distinct markers and colors
+    ax.scatter(timestamps, sensor_a, s=40, c='tab:blue', alpha=0.7,
+               label='Sensor A', edgecolors='k')
+    ax.scatter(timestamps, sensor_b, s=40, c='tab:orange', alpha=0.7,
+               marker='s', label='Sensor B', edgecolors='k')
+
+    # Labels, title and grid
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Temperature (°C)')
+    ax.set_title('Scatter Plot: Temperature vs Time for Two Sensors')
+
+    # Legend and grid help with readability
+    ax.legend()
+    ax.grid(alpha=0.3)
+
+    # Function intentionally returns None (modifies ax in place)
+    return None
+
