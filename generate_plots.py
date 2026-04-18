@@ -106,7 +106,7 @@ def plot_scatter(ax: Axes, timestamps: np.ndarray, sensor_a: np.ndarray, sensor_
 # at 150 DPI with tight bounding box.
 
 def main(seed: int | None = 1234) -> None:
-    """Generate data, create plots, and save PNG files.
+    """Generate data, create a combined plot, and save as a single PNG file.
 
     Parameters
     ----------
@@ -117,40 +117,35 @@ def main(seed: int | None = 1234) -> None:
     Returns
     -------
     None
-        Creates and saves three PNG files in the current working directory:
-        'scatter.png', 'histogram.png', and 'boxplot.png'.
+        Creates and saves a single PNG file named 'sensor_analysis.png' in
+        the current working directory. The file contains a 1x3 subplot figure
+        with a scatter plot, histogram, and box plot arranged left to right.
     """
     # Generate data
     sensor_a, sensor_b, timestamps = generate_data(seed)
-
-    # Scatter plot
-    fig, ax = plt.subplots(figsize=(10, 5))
-    plot_scatter(ax, timestamps, sensor_a, sensor_b)
-    fig.tight_layout()
-    fig.savefig('scatter.png', dpi=200)
-    plt.close(fig)
-
-    # Histogram
-    fig, ax = plt.subplots(figsize=(8, 5))
+ 
+    # Create a single figure with 3 subplots side by side
+    fig, (ax_scatter, ax_hist, ax_box) = plt.subplots(1, 3, figsize=(22, 6))
+ 
+    # --- Scatter plot ---
+    plot_scatter(ax_scatter, timestamps, sensor_a, sensor_b)
+ 
+    # --- Histogram ---
     bins = np.linspace(min(sensor_a.min(), sensor_b.min()) - 1,
                        max(sensor_a.max(), sensor_b.max()) + 1, 30)
-    ax.hist(sensor_a, bins=bins, alpha=0.6, label='Sensor A', color='tab:blue', edgecolor='k')
-    ax.hist(sensor_b, bins=bins, alpha=0.6, label='Sensor B', color='tab:orange', edgecolor='k')
-    ax.axvline(sensor_a.mean(), color='tab:blue', linestyle='--', linewidth=2, label='Sensor A mean')
-    ax.axvline(sensor_b.mean(), color='tab:orange', linestyle='--', linewidth=2, label='Sensor B mean')
-    ax.set_xlabel('Temperature (°C)')
-    ax.set_ylabel('Count')
-    ax.set_title('Histogram: Sensor Temperature Readings')
-    ax.legend()
-    ax.grid(alpha=0.3)
-    fig.tight_layout()
-    fig.savefig('histogram.png', dpi=200)
-    plt.close(fig)
-
-    # Box plot
-    fig, ax = plt.subplots(figsize=(6, 6))
+    ax_hist.hist(sensor_a, bins=bins, alpha=0.6, label='Sensor A', color='tab:blue', edgecolor='k')
+    ax_hist.hist(sensor_b, bins=bins, alpha=0.6, label='Sensor B', color='tab:orange', edgecolor='k')
+    ax_hist.axvline(sensor_a.mean(), color='tab:blue', linestyle='--', linewidth=2, label='Sensor A mean')
+    ax_hist.axvline(sensor_b.mean(), color='tab:orange', linestyle='--', linewidth=2, label='Sensor B mean')
+    ax_hist.set_xlabel('Temperature (°C)')
+    ax_hist.set_ylabel('Count')
+    ax_hist.set_title('Histogram: Sensor Temperature Readings')
+    ax_hist.legend()
+    ax_hist.grid(alpha=0.3)
+ 
+    # --- Box plot ---
     data = [sensor_a, sensor_b]
-    bp = ax.boxplot(data, tick_labels=['Sensor A', 'Sensor B'], patch_artist=True, showmeans=True)
+    bp = ax_box.boxplot(data, tick_labels=['Sensor A', 'Sensor B'], patch_artist=True, showmeans=True)
     colors = ['tab:blue', 'tab:orange']
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
@@ -161,14 +156,16 @@ def main(seed: int | None = 1234) -> None:
         for mean in bp['means']:
             mean.set(marker='D', markerfacecolor='white', markeredgecolor='black')
     overall_mean = np.concatenate(data).mean()
-    ax.axhline(overall_mean, color='gray', linestyle='--', linewidth=1.5,
-               label=f'Overall mean ({overall_mean:.2f} °C)')
-    ax.set_ylabel('Temperature (°C)')
-    ax.set_title('Box Plot: Sensor Temperature Distributions')
-    ax.legend()
-    ax.grid(axis='y', alpha=0.3)
+    ax_box.axhline(overall_mean, color='gray', linestyle='--', linewidth=1.5,
+                   label=f'Overall mean ({overall_mean:.2f} °C)')
+    ax_box.set_ylabel('Temperature (°C)')
+    ax_box.set_title('Box Plot: Sensor Temperature Distributions')
+    ax_box.legend()
+    ax_box.grid(axis='y', alpha=0.3)
+ 
+    # Save the combined figure
     fig.tight_layout()
-    fig.savefig('boxplot.png', dpi=200)
+    fig.savefig('sensor_analysis.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
 
 
