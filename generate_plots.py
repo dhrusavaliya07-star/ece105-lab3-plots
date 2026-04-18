@@ -150,7 +150,7 @@ def main(seed: int | None = 1234) -> None:
     # Box plot
     fig, ax = plt.subplots(figsize=(6, 6))
     data = [sensor_a, sensor_b]
-    bp = ax.boxplot(data, labels=['Sensor A', 'Sensor B'], patch_artist=True, showmeans=True)
+    bp = ax.boxplot(data, tick_labels=['Sensor A', 'Sensor B'], patch_artist=True, showmeans=True)
     colors = ['tab:blue', 'tab:orange']
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
