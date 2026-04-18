@@ -101,6 +101,9 @@ def plot_scatter(ax: Axes, timestamps: np.ndarray, sensor_a: np.ndarray, sensor_
     # Function intentionally returns None (modifies ax in place)
     return None
 
+# Create main() that generates data, creates a 1x3 subplot figure,
+# calls each plot function, adjusts layout, and saves as sensor_analysis.png
+# at 150 DPI with tight bounding box.
 
 def main(seed: int | None = 1234) -> None:
     """Generate data, create plots, and save PNG files.
