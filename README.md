@@ -1,13 +1,3 @@
-<!--
-Sections:
-1. Project overview
-2. Repository contents
-3. Dependencies and environment setup
-4. How to run
-5. Output files
-6. AI tools used and disclosure
--->
-
 # Project overview
 
 `generate_plots.py` creates synthetic temperature readings for two sensors, builds a 1x3 Matplotlib figure (scatter plot, histogram, and box plot), and saves the result as a PNG image.
@@ -60,4 +50,4 @@ Running the script writes:
 
 # AI tools used and disclosure
 
-_Placeholder: Describe any AI tools used during development (if any), what they were used for, and the extent of AI-generated or AI-assisted content._
+I used the copilot cli tool, which was directly integrated into vscode. This allowed it to directly make changes to the files without any assistance from me. 
