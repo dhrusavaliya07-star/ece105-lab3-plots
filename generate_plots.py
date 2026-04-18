@@ -118,14 +118,19 @@ def main(seed: int | None = 1234) -> None:
     -------
     None
         Creates and saves a single PNG file named 'sensor_analysis.png' in
-        the current working directory. The file contains a 1x3 subplot figure
-        with a scatter plot, histogram, and box plot arranged left to right.
+        the current working directory. The file contains a 2x2 subplot figure
+        where three cells hold a scatter plot, histogram, and box plot, and
+        the fourth cell is intentionally empty.
     """
     # Generate data
     sensor_a, sensor_b, timestamps = generate_data(seed)
  
-    # Create a single figure with 3 subplots side by side
-    fig, (ax_scatter, ax_hist, ax_box) = plt.subplots(1, 3, figsize=(22, 6))
+    # Create a 2x2 figure and leave one cell intentionally empty
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    ax_scatter = axes[0, 0]
+    ax_hist = axes[0, 1]
+    ax_box = axes[1, 0]
+    axes[1, 1].axis('off')
  
     # --- Scatter plot ---
     plot_scatter(ax_scatter, timestamps, sensor_a, sensor_b)
